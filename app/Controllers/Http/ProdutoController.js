@@ -1,69 +1,46 @@
 'use strict'
 
-const Produto = use('App/Models/Produto')
+const ProdutoService = use('App/Services/ProdutoService')
 
 class ProdutoController {
+	constructor () {
+		this._service = new ProdutoService()
+	}	
 
-    async store({ request, response }) {
-		try {
-			const requestBody = request.only(["nome", "preco"]);
-			const result = await Produto.create(requestBody);
+    async store({ request}) {
+		const requestBody = request.only(["nome", "preco"])
+		const produto = await this._service.create(requestBody)
 
-			response.status(201).json(result);
-		} catch (error) {
-			response.status(500);
-		}
+		return produto
 	}
 
-	async index({ response }) {
-		try {
-			const produtos = await Produto.all();
-			response.status(200).json(produtos);
-		} catch (error) {
-			response.status(500);
-		}
+	async index() {
+		const produtos = await this._service.listAll();
+		
+		return produtos
 	}
 
-	async show({ params, response }) {
-		try {
-			const { id } = params;
-			const produto = await Produto.find(id);
-			response.status(200).json(produto);
-		} catch (error) {
-			response.status(500);
-		}
+	async show({ params }) {
+		const { id } = params;
+		const produto = await this._service.show(id);
+
+		return produto
 	}
 
 	async update({ params, request, response }) {
-		try {
-			const { id } = params;
-			const requestBody = request.only(["nome", "preco"]);
+		const { id } = params;
+		const requestBody = request.only(["nome", "preco"]);
 
-			const produto = await Produto.findByOrFail("id", id);
+		const produto = await this._service.update(id, requestBody)
 
-			produto.nome = requestBody.nome;
-			produto.preco = requestBody.preco;
-
-			await produto.save();
-
-			response.status(200).json(produto);
-		} catch (error) {
-			response.status(500);
-		}
+		return produto
 	}
 
 	async delete({ params, response }) {
-		try {
-			const { id } = params;
+		const { id } = params;
+		await this._service.destroy(id)
 
-			const produto = await Produto.findByOrFail("id", id);
-
-			await produto.delete();
-
-			response.status(200).json({});
-		} catch (error) {
-			response.status(500);
-		}
+		return id
 	}
 }
 

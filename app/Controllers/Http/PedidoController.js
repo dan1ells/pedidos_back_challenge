@@ -1,93 +1,58 @@
 'use strict'
 
-const Pedido = use('App/Models/Pedido')
+const PedidoService = use('App/Services/PedidoService')
 
 class PedidoController {
-
-    async store({ request, response }) {
-		try {
-			const requestBody = request.only(["data_criacao", "status", "cliente_id", "produto_id"]);
-
-			const result = await Pedido.create(requestBody);
-
-			response.status(201).json(result);
-		} catch (error) {
-			response.status(500);
-		}
+	constructor () {
+		this._service = new PedidoService()
 	}
 
-	async index({ response }) {
-		try {
-			const pedidos = await Pedido.all();
-			response.status(200).json(pedidos);
-		} catch (error) {
-			response.status(500);
-		}
+    async store({ request }) {
+		const requestBody = request.only(["data_criacao", "status", "cliente_id", "produto_id"])
+		const pedido = await this._service.create(requestBody)
+
+		return pedido
 	}
 
-	async show({ params, response }) {
-		try {
-			const { id } = params;
-			const pedido = await Pedido.find(id);
-			response.status(200).json(pedido);
-		} catch (error) {
-			response.status(500);
-		}
+	async index() {
+		const pedidos = await this._service.listAll()
+
+		return pedidos
+	}
+
+	async show({ params }) {
+		const { id } = params
+		const pedido = await this._service.show(id)
+
+		return pedido
 	}
 
 	async update({ params, request, response }) {
-		try {
-			const { id } = params;
-			const requestBody = request.only(["status"]);
-
-			if (!requestBody.status) {
-				return response
-					.status(400)
-					.json({ message: "O status não foi informado" });
-			}
-
-			const pedido = await Pedido.findByOrFail("id", id);
-
-			pedido.status = requestBody.status;
-
-			await pedido.save();
-
-			response.status(200).json(pedido);
-		} catch (error) {
-			response.status(500);
+		const { id } = params;
+		const requestBody = request.only(["status"]);
+		if (!requestBody.status) {
+			return response
+				.status(400)
+				.json({ message: "O status não foi informado" });
 		}
+		const pedido = await this._service.update(id, requestBody)
+
+		return pedido
 	}
 
 	async delete({ params, request, response }) {
-		try {
-
-			const requestBody = request.only(["cliente_id"]);
-
-			if (!requestBody.cliente_id) {
-				return response
-					.status(400)
-					.json({ message: "There are missing params" });
-			}
-
-			const cliente_id = parseInt(requestBody.cliente_id)
-
-			const { id } = params;
-
-			const pedido = await Pedido.findByOrFail("id", id);
-
-			if (cliente_id !== pedido.cliente_id) {
-				return response
-					.status(400)
-					.json({ message: "Esse cliente nao pode deletar este pedido" });
-			} else {
-
-			await pedido.delete();
-
-			response.status(200).json({});
-			}
-		} catch (error) {
-			response.status(500).json({message: "Item não encontrado"});
+		const requestBody = request.only(["cliente_id"]);
+		if (!requestBody.cliente_id) {
+			return response
+				.status(400)
+				.json({ message: "Informe seu id de cliente" });
 		}
+
+		const cliente_id = parseInt(requestBody.cliente_id)
+		const { id } = params;
+		await this._service.destroy(id, cliente_id)
+
+		return id
 	}
 }
 

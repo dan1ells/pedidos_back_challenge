@@ -1,72 +1,47 @@
 'use strict'
 
-const Cliente = use('App/Models/Cliente')
+const ClienteService = use('App/Services/ClienteService')
 
 class ClienteController {
-
-    async store({ request, response }) {
-		try {
-			const requestBody = request.only(["nome", "email", "telefone", "endereco"]);
-
-			const result = await Cliente.create(requestBody);
-
-			response.status(201).json(result);
-		} catch (error) {
-			response.status(500).json({message: "Nao foi possivel cadastrar: ", error});
-		}
+	constructor () {
+		this._service = new ClienteService()
 	}
 
-	async index({ response }) {
-		try {
-			const clientes = await Cliente.all();
-			response.status(200).json(clientes);
-		} catch (error) {
-			response.status(500);
-		}
+    async store({ request}) {
+		const requestBody = request.only(["nome", "email", "telefone", "endereco"])
+		const cliente = await this._service.create(requestBody)
+
+		return cliente
 	}
 
-	async show({ params, response }) {
-		try {
-			const { id } = params;
-			const cliente = await Cliente.find(id);
-			response.status(200).json(cliente);
-		} catch (error) {
-			response.status(500);
-		}
+	async index() {
+		const clientes = await this._service.listAll()
+
+		return clientes
+	}
+
+	async show({ params }) {
+		const { id } = params;
+		const cliente = await this._service.show(id)
+
+		return cliente
 	}
 
 	async update({ params, request, response }) {
-		try {
-			const { id } = params;
-			const requestBody = request.only(["nome", "email", "telefone", "endereco"]);
+		const { id } = params;
+		const requestBody = request.only(["nome", "email", "telefone", "endereco"]);
 
-			const cliente = await Cliente.findByOrFail("id", id);
+		const cliente = await this._service.update(id, requestBody)
 
-			cliente.nome = requestBody.nome;
-			cliente.email = requestBody.email;
-            cliente.telefone = requestBody.telefone;
-            cliente.endereco = requestBody.endereco
-
-			await cliente.save();
-
-			response.status(200).json(cliente);
-		} catch (error) {
-			response.status(500);
-		}
+		return cliente
 	}
 
 	async delete({ params, response }) {
-		try {
-			const { id } = params;
+		const { id } = params
 
-			const cliente = await Cliente.findByOrFail("id", id);
+		await this._service.destroy(id)
 
-			await cliente.delete();
-
-			response.status(200).json({});
-		} catch (error) {
-			response.status(500);
-		}
+		return id
 	}
 }
 
