@@ -64,17 +64,37 @@ class PedidoController {
 		}
 	}
 
-	async delete({ params, response }) {
+	async delete({ params, request, response }) {
 		try {
+
+			const requestBody = request.only(["cliente_id"]);
+
+			if (!requestBody.cliente_id) {
+				return response
+					.status(400)
+					.json({ message: "There are missing params" });
+			}
+
+			const cliente_id = parseInt(requestBody.cliente_id)
+
 			const { id } = params;
 
 			const pedido = await Pedido.findByOrFail("id", id);
+			console.log(cliente_id)
+			console.log(pedido.cliente_id)
+
+			if (cliente_id !== pedido.cliente_id) {
+				return response
+					.status(400)
+					.json({ message: "Esse cliente nao pode deletar este pedido" });
+			} else {
 
 			await pedido.delete();
 
 			response.status(200).json({});
+			}
 		} catch (error) {
-			response.status(500);
+			response.status(500).json({message: "Item não encontrado"});
 		}
 	}
 }

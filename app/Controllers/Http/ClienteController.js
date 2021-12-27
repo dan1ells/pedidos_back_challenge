@@ -18,7 +18,7 @@ class ClienteController {
 
 			response.status(201).json(result);
 		} catch (error) {
-			response.status(500);
+			response.status(500).json({message: "Nao foi possivel cadastrar: ", error});
 		}
 	}
 
