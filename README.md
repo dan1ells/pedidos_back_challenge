@@ -8,6 +8,8 @@ This is the boilerplate for creating an API server in AdonisJs, it comes pre-con
 4. Lucid ORM
 5. Migrations and seeds
 
+Para solucionar  o problema utilizei do Javascript em conjunto com o framework adonisjs conectando ao banco de dados no postgreSQL 
+
 ## Instalaçao
 
 Clone manualmete o repositorio e execute o comando 
