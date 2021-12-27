@@ -16,20 +16,23 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
+Route.post('/users', 'UserController.create')
+Route.post('/sessions', 'SessionController.create')
+
 Route.post("/cliente", "ClienteController.store");
-Route.get("/cliente", "ClienteController.index");
+Route.get("/cliente", "ClienteController.index").middleware('auth');
 Route.get("/cliente/:id", "ClienteController.show");
 Route.put("/cliente/:id", "ClienteController.update");
 Route.delete("/cliente/:id", "ClienteController.delete");
 
-Route.post("/produto", "ProdutoController.store");
+Route.post("/produto", "ProdutoController.store").middleware('auth');
 Route.get("/produto", "ProdutoController.index");
-Route.get("/produto/:id", "ProdutoController.show");
-Route.put("/produto/:id", "ProdutoController.update");
-Route.delete("/produto/:id", "ProdutoController.delete");
+Route.get("/produto/:id", "ProdutoController.show").middleware('auth');
+Route.put("/produto/:id", "ProdutoController.update").middleware('auth');
+Route.delete("/produto/:id", "ProdutoController.delete").middleware('auth');
 
 Route.post("/pedido", "PedidoController.store");
-Route.get("/pedido", "PedidoController.index");
+Route.get("/pedido", "PedidoController.index").middleware('auth');
 Route.get("/pedido/:id", "PedidoController.show");
 Route.put("/pedido/:id", "PedidoController.update");
 Route.delete("/pedido/:id", "PedidoController.delete");
