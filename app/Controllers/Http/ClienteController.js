@@ -8,12 +8,6 @@ class ClienteController {
 		try {
 			const requestBody = request.only(["nome", "email", "telefone", "endereco"]);
 
-			if (!requestBody.nome || !requestBody.email || !requestBody.telefone || !requestBody.endereco) {
-				return response
-					.status(400)
-					.json({ message: "There are missing params" });
-			}
-
 			const result = await Cliente.create(requestBody);
 
 			response.status(201).json(result);
@@ -45,12 +39,6 @@ class ClienteController {
 		try {
 			const { id } = params;
 			const requestBody = request.only(["nome", "email", "telefone", "endereco"]);
-
-			if (!requestBody.nome || !requestBody.email) {
-				return response
-					.status(400)
-					.json({ message: "There are missing params" });
-			}
 
 			const cliente = await Cliente.findByOrFail("id", id);
 

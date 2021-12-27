@@ -8,12 +8,6 @@ class PedidoController {
 		try {
 			const requestBody = request.only(["data_criacao", "status", "cliente_id", "produto_id"]);
 
-			if (!requestBody.data_criacao || !requestBody.status || !requestBody.cliente_id || !requestBody.produto_id) {
-				return response
-					.status(400)
-					.json({ message: "There are missing params" });
-			}
-
 			const result = await Pedido.create(requestBody);
 
 			response.status(201).json(result);
@@ -49,7 +43,7 @@ class PedidoController {
 			if (!requestBody.status) {
 				return response
 					.status(400)
-					.json({ message: "There are missing params" });
+					.json({ message: "O status não foi informado" });
 			}
 
 			const pedido = await Pedido.findByOrFail("id", id);
@@ -80,8 +74,6 @@ class PedidoController {
 			const { id } = params;
 
 			const pedido = await Pedido.findByOrFail("id", id);
-			console.log(cliente_id)
-			console.log(pedido.cliente_id)
 
 			if (cliente_id !== pedido.cliente_id) {
 				return response

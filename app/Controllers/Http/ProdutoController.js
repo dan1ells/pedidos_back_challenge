@@ -7,13 +7,6 @@ class ProdutoController {
     async store({ request, response }) {
 		try {
 			const requestBody = request.only(["nome", "preco"]);
-
-			if (!requestBody.nome || !requestBody.preco) {
-				return response
-					.status(400)
-					.json({ message: "There are missing params" });
-			}
-
 			const result = await Produto.create(requestBody);
 
 			response.status(201).json(result);
@@ -45,12 +38,6 @@ class ProdutoController {
 		try {
 			const { id } = params;
 			const requestBody = request.only(["nome", "preco"]);
-
-			if (!requestBody.nome || !requestBody.preco) {
-				return response
-					.status(400)
-					.json({ message: "There are missing params" });
-			}
 
 			const produto = await Produto.findByOrFail("id", id);
 
